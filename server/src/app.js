@@ -25,15 +25,43 @@ const app = express();
 // Security Middlewares
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
-const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+const rawClientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+const allowedOrigins = rawClientUrl
+  .split(',')
+  .map((url) => url.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || origin === clientUrl || process.env.NODE_ENV === 'development') {
-        callback(null, true);
-      } else {
-        callback(null, true);
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server health checks)
+      if (!origin) return callback(null, true);
+
+      const normalizedOrigin = origin.replace(/\/+$/, '');
+
+      // In development or if requesting from localhost
+      if (
+        process.env.NODE_ENV === 'development' ||
+        normalizedOrigin.includes('localhost') ||
+        normalizedOrigin.includes('127.0.0.1')
+      ) {
+        return callback(null, true);
       }
+
+      // Check configured CLIENT_URL(s)
+      if (allowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      }
+
+      // Allow Vercel preview domains if frontend is hosted on Vercel
+      try {
+        const hostname = new URL(origin).hostname;
+        if (hostname.endsWith('.vercel.app')) {
+          return callback(null, true);
+        }
+      } catch {}
+
+      return callback(null, false);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

@@ -108,3 +108,22 @@ export const capitalize = (str) => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+/**
+ * Resolves static asset / profile photo URLs relative to the backend API host if needed
+ * @param {String} photoPath
+ */
+export const getProfilePhotoUrl = (photoPath) => {
+  if (!photoPath) return '';
+  if (
+    photoPath.startsWith('http://') ||
+    photoPath.startsWith('https://') ||
+    photoPath.startsWith('blob:') ||
+    photoPath.startsWith('data:')
+  ) {
+    return photoPath;
+  }
+  const apiBase = import.meta.env.VITE_API_BASE_URL || '';
+  const backendBase = apiBase.replace(/\/api\/?$/, '');
+  return `${backendBase}${photoPath.startsWith('/') ? '' : '/'}${photoPath}`;
+};

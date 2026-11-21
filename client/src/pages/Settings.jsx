@@ -7,6 +7,7 @@ import {
   LogOut, Check, Bell, Moon, Lock, Info, Upload, Trash2, Download 
 } from 'lucide-react';
 import api from '../services/api';
+import { getProfilePhotoUrl } from '../utils/formatters';
 
 export default function Settings() {
   const { user, logout, updateCurrency, refreshUser } = useAuth();
@@ -181,7 +182,7 @@ export default function Settings() {
               </label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 {user?.profilePhoto ? (
-                  <img src={user.profilePhoto} alt="Profile" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'center', border: '2px solid var(--accent-indigo)' }} />
+                  <img src={getProfilePhotoUrl(user.profilePhoto)} alt="Profile" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'center', border: '2px solid var(--accent-indigo)' }} />
                 ) : (
                   <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent-indigo), var(--accent-purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '20px', fontWeight: '700' }}>
                     {user?.name?.slice(0, 2).toUpperCase() || 'U'}

@@ -7,6 +7,7 @@ import {
   Settings as SettingsIcon, LogOut, Wallet, Receipt 
 } from 'lucide-react';
 import api from '../services/api';
+import { getProfilePhotoUrl } from '../utils/formatters';
 
 export default function Profile() {
   const { user, logout } = useAuth();
@@ -76,7 +77,7 @@ export default function Profile() {
         }}>
           {user?.profilePhoto ? (
             <img 
-              src={user.profilePhoto} 
+              src={getProfilePhotoUrl(user.profilePhoto)} 
               alt={user.name} 
               style={{
                 width: '80px',
